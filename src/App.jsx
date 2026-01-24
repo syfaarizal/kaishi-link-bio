@@ -325,6 +325,7 @@ export default function App() {
             icon={<FaUserSecretIcon size={20} />} 
             text="Bisik-bisik" 
             delay="1.7s" 
+            href="https://bisik-bisik.vercel.app/"
           />
 
           <button 
