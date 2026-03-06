@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Instagram, 
   Youtube, 
-  Copy, 
   CheckCircle, 
   Sparkles, 
   Send, 
   X, 
   Bot,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 
 // --- CUSTOM STYLES ---
@@ -41,6 +39,11 @@ const customStyles = `
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
   }
   
   .animate-materialize {
@@ -109,7 +112,6 @@ const BrandInstagramIcon = ({ size = 20, className }) => (
 
 // --- MAIN COMPONENT ---
 export default function App() {
-  const [showToast, setShowToast] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // AI Chat State
@@ -123,28 +125,6 @@ export default function App() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
-
-  const handleCopyDiscord = () => {
-    const textToCopy = 'kaishiscd';
-    try {
-      const textArea = document.createElement("textarea");
-      textArea.value = textToCopy;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-9999px";
-      textArea.style.top = "0";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      if (successful) {
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-      }
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -170,10 +150,10 @@ export default function App() {
 
     FUNGSI UTAMA ASISTEN
     - Menjawab pertanyaan umum seperti:
-      “Kai Shi itu siapa?”
-      “Ngapain aja?”
-      “Kapan online?”
-      “Bisa bantu apa?”
+      "Kai Shi itu siapa?"
+      "Ngapain aja?"
+      "Kapan online?"
+      "Bisa bantu apa?"
     - Menyampaikan jawaban ringkas, jelas, dan konsisten tanpa perlu ditanya dua kali.
     - Mengarahkan pembicaraan ke topik yang relevan dengan kapasitas Kai Shi.
 
@@ -183,14 +163,14 @@ export default function App() {
     - Jangan memberi kesan selalu tersedia.
 
     CARA MENJAWAB PERTANYAAN RANDOM
-    - Jika ditanya hal personal ringan (contoh: “cewek atau cowok?”):
+    - Jika ditanya hal personal ringan (contoh: "cewek atau cowok?"):
       Kai Shi itu cewek. Jawab dengan jelas, singkat, dan santai tanpa defensif.
     - Jika ditanya hal yang tidak relevan atau terlalu dalam:
       arahkan dengan halus, tanpa menggurui dan tetap santai dengan sedikit jenaka.
 
     GAYA KOMUNIKASI
     - Bahasa Indonesia santai, Gen Z, lugas, to the point namun juga jenaka atau sarkas.
-    - Boleh pakai “gua” saat konteksnya pas, tanpa agresif berlebihan.
+    - Boleh pakai "gua" saat konteksnya pas, tanpa agresif berlebihan.
     - Tidak edgy, tidak drama, tidak over-edgy.
     - Lebih fokus ke kejelasan, ketajaman insight, dan solusi praktis.
 
@@ -214,7 +194,6 @@ export default function App() {
     `;
 
     try {
-      // INI BAGIAN PENTING: MENGAMBIL API KEY DARI FILE .ENV
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       
       const response = await fetch(
@@ -296,7 +275,7 @@ export default function App() {
             href="https://kaishi.netlify.app/"
           />
 
-          {/* AI BUTTON - MODIFIED HOVER */}
+          {/* AI BUTTON */}
           <button
             onClick={() => setIsModalOpen(true)}
             className="group relative w-full bg-linear-to-r from-white to-rose-50 text-rose-900 p-4 rounded-2xl flex items-center justify-between border-2 border-[#ff8fa3] shadow-sm hover:shadow-lg hover:from-[#ff8fa3] hover:to-[#ff8fa3] hover:text-white transition-all duration-300 cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4"
@@ -327,19 +306,49 @@ export default function App() {
             href="https://bisik-bisik.vercel.app/"
           />
 
-          <button 
-            onClick={handleCopyDiscord}
-            className="group w-full bg-white text-rose-900 p-4 rounded-2xl flex items-center justify-between border border-dashed border-[#ff8fa3] hover:border-solid hover:bg-[#ff8fa3] hover:text-white transition-all duration-300 cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4"
-            style={{ animationDelay: '1.8s', animationFillMode: 'forwards' }}
+          <div
+            className="flex items-center gap-3 mt-2"
+            style={{ opacity: 0, animation: 'slideIn 0.6s ease-out 1.75s forwards' }}
           >
-            <div className="flex items-center gap-4">
-              <div className="text-[#ff8fa3] group-hover:text-white transition-colors">
-                 <BrandDiscordIcon size={20} />
+            <div className="flex-1 h-px bg-rose-200/60" />
+            <span className="text-[11px] font-medium text-rose-300 tracking-widest uppercase">Komunitas</span>
+            <div className="flex-1 h-px bg-rose-200/60" />
+          </div>
+
+          <a
+            href="https://discord.gg/JHAZT4MV"
+            target="_blank"
+            rel="noreferrer"
+            className="group w-full bg-white text-rose-900 rounded-2xl flex flex-col border-2 border-dashed border-rose-200 hover:border-solid hover:border-[#ff8fa3] hover:bg-[#ff8fa3] hover:text-white transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_6px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_20px_rgba(255,143,163,0.3)] overflow-hidden"
+            style={{ opacity: 0, transform: 'translateY(20px)', animation: 'slideIn 0.6s ease-out 1.8s forwards' }}
+          >
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-4">
+                <div className="text-[#ff8fa3] transition-colors group-hover:text-white">
+                  <BrandDiscordIcon size={20} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold leading-tight">Join Server Discord</span>
+                  <span className="text-[11px] text-rose-400 group-hover:text-rose-100 transition-colors mt-0.5">
+                    💬 Ngobrol, sharing &amp; nongkrong bareng
+                  </span>
+                </div>
               </div>
-              <span className="font-semibold">Copy Discord Username</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-500 group-hover:bg-white/20 group-hover:text-white transition-all">
+                  FREE
+                </span>
+                <ChevronRight size={18} className="text-rose-200 transition-colors group-hover:text-white" />
+              </div>
             </div>
-            <Copy size={18} className="opacity-30 group-hover:opacity-100 group-hover:text-white transition-all" />
-          </button>
+
+            <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 group-hover:bg-white/10 border-t border-rose-100 group-hover:border-white/20 transition-all">
+              <span className="flex items-center gap-1 text-[11px] text-rose-400 group-hover:text-rose-100 transition-colors">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                Online sekarang
+              </span>
+            </div>
+          </a>
 
         </div>
 
@@ -347,11 +356,6 @@ export default function App() {
           &copy; 2026 kaishiscd. All rights reserved.
         </footer>
 
-      </div>
-
-      <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 bg-rose-800 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3 transition-all duration-300 z-50 ${showToast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
-        <CheckCircle size={18} />
-        <span className="text-sm font-medium">Username 'kaishiscd' disalin!</span>
       </div>
 
       {isModalOpen && (
@@ -417,7 +421,6 @@ export default function App() {
 }
 
 function LinkButton({ icon, text, delay, href = "#" }) {
-  // Menggunakan Tailwind hover classes agar lebih smooth dan sesuai request
   return (
     <a 
       href={href}
@@ -428,13 +431,11 @@ function LinkButton({ icon, text, delay, href = "#" }) {
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Icon berubah jadi putih saat parent (group) di-hover */}
         <div className="text-[#ff8fa3] transition-colors group-hover:text-white">
           {icon}
         </div>
         <span className="font-semibold">{text}</span>
       </div>
-      {/* Panah kanan juga berubah jadi putih saat parent di-hover */}
       <ChevronRight size={18} className="text-rose-200 transition-colors group-hover:text-white" />
     </a>
   );
