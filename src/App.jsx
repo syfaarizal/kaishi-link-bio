@@ -108,7 +108,7 @@ export default function App() {
     setInput('');
     setIsTyping(true);
 
-    // 2. Format histori percakapan agar AI punya "ingatan"
+    // 2. Format histori percakapan 
     const conversationHistory = newMessages.map(msg => {
       return `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`;
     }).join('\n');
@@ -200,9 +200,8 @@ export default function App() {
           <div className="w-32 h-32 mx-auto relative mb-4">
             <div className="absolute -inset-4 bg-linear-to-tr from-transparent via-rose-300 to-transparent rounded-full animate-spin opacity-50 blur-sm"></div>
             <div className="relative w-full h-full rounded-full border-4 border-white shadow-xl overflow-hidden animate-materialize bg-white">
-               {/* Gunakan placeholder jika gambar tidak ada di canvas */}
                <div className="w-full h-full bg-rose-200 flex items-center justify-center text-rose-500 font-bold text-2xl">
-                 KS
+                 <img src="/public/kaishi-logo.png" alt="Kai Shi Logo" />
                </div>
             </div>
           </div>
