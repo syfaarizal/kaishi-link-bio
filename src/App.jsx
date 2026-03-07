@@ -12,56 +12,27 @@ import {
 // --- CUSTOM STYLES ---
 const customStyles = `
   @keyframes materialize {
-    0% {
-      opacity: 0;
-      transform: scale(0) rotate(-180deg);
-      filter: blur(20px);
-    }
-    60% {
-      transform: scale(1.1) rotate(10deg);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1) rotate(0deg);
-      filter: blur(0px);
-    }
+    0% { opacity: 0; transform: scale(0) rotate(-180deg); filter: blur(20px); }
+    60% { transform: scale(1.1) rotate(10deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0px); }
   }
-
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
   @keyframes slideIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-5px); }
   }
-  
-  .animate-materialize {
-    animation: materialize 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
-  }
-
-  /* Pattern Background */
-  .bg-pattern {
-    background-image: radial-gradient(#ff8fa3 1px, transparent 1px);
-    background-size: 30px 30px;
-  }
-
+  .animate-materialize { animation: materialize 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards; }
+  .bg-pattern { background-image: radial-gradient(#ff8fa3 1px, transparent 1px); background-size: 30px 30px; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 `;
 
-// --- CUSTOM ICONS (SOLID STYLE) ---
-
+// --- CUSTOM ICONS ---
 const FaBriefcaseIcon = ({ size = 20, className }) => (
   <svg width={size} height={size} fill="currentColor" className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
     <path d="M200 48l112 0c4.4 0 8 3.6 8 8l0 40-128 0 0-40c0-4.4 3.6-8 8-8zm-56 8l0 40-80 0C28.7 96 0 124.7 0 160l0 96 512 0 0-96c0-35.3-28.7-64-64-64l-80 0 0-40c0-30.9-25.1-56-56-56L200 0c-30.9 0-56 25.1-56 56zM512 304l-192 0 0 16c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32l0-16-192 0 0 112c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-112z"/>
@@ -112,12 +83,13 @@ const BrandInstagramIcon = ({ size = 20, className }) => (
 
 // --- MAIN COMPONENT ---
 export default function App() {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // AI Chat State
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { text: "Yo, wassup?", sender: 'ai' }
+    { text: "Yo, wassup? Ada yang mau ditanya soal Kai Shi?", sender: 'ai' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
@@ -129,11 +101,20 @@ export default function App() {
   const handleSendMessage = async () => {
     if (!input.trim()) return;
     const userMsg = input;
-    setMessages(prev => [...prev, { text: userMsg, sender: 'user' }]);
+    
+    // 1. Update State dengan pesan User
+    const newMessages = [...messages, { text: userMsg, sender: 'user' }];
+    setMessages(newMessages);
     setInput('');
     setIsTyping(true);
 
-    const systemPrompt = `
+    // 2. Format histori percakapan agar AI punya "ingatan"
+    const conversationHistory = newMessages.map(msg => {
+      return `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`;
+    }).join('\n');
+
+    // 3. Susun System Prompt yang kuat
+    const systemPromptText = `
     Kamu adalah AI asisten yang sangat memahami Kai Shi (kaishiscd).
     Tugas kamu adalah menjawab pertanyaan pengguna secara natural, termasuk pertanyaan ringan, detail, atau random, tanpa merusak konsistensi persona Kai Shi.
     Ikuti pedoman berikut dengan ketat:
@@ -142,77 +123,66 @@ export default function App() {
     - Kai Shi adalah alter ego, bukan orang terpisah.
     - Digunakan untuk konteks eksekusi, karya, dan komunikasi yang lebih tegas.
     - Bukan figur yang dibuat untuk sensasi atau misteri berlebihan.
-
-    PRINSIP INTI KAI SHI
-    - Cara berpikir: strategis, visioner, eksekusi dulu baru teori.
-    - Nilai utama: disiplin, kejujuran intelektual, dan progres nyata.
-    - Karakter: tegas, lugas, konsisten, santai dan juga jenaka.
-
-    FUNGSI UTAMA ASISTEN
-    - Menjawab pertanyaan umum seperti:
-      "Kai Shi itu siapa?"
-      "Ngapain aja?"
-      "Kapan online?"
-      "Bisa bantu apa?"
-    - Menyampaikan jawaban ringkas, jelas, dan konsisten tanpa perlu ditanya dua kali.
-    - Mengarahkan pembicaraan ke topik yang relevan dengan kapasitas Kai Shi.
-
-    STATUS & KETERSEDIAAN
-    - Jika tidak ada jadwal aktif, jelaskan bahwa Kai Shi offline / fokus kerja.
-    - Jika ada jam interaksi, sampaikan secara singkat dan tegas.
-    - Jangan memberi kesan selalu tersedia.
-
-    CARA MENJAWAB PERTANYAAN RANDOM
-    - Jika ditanya hal personal ringan (contoh: "cewek atau cowok?"):
-      Kai Shi itu cewek. Jawab dengan jelas, singkat, dan santai tanpa defensif.
-    - Jika ditanya hal yang tidak relevan atau terlalu dalam:
-      arahkan dengan halus, tanpa menggurui dan tetap santai dengan sedikit jenaka.
+    - Kai Shi itu cewek. Jawab dengan jelas, singkat, dan santai.
 
     GAYA KOMUNIKASI
     - Bahasa Indonesia santai, Gen Z, lugas, to the point namun juga jenaka atau sarkas.
-    - Boleh pakai "gua" saat konteksnya pas, tanpa agresif berlebihan.
-    - Tidak edgy, tidak drama, tidak over-edgy.
-    - Lebih fokus ke kejelasan, ketajaman insight, dan solusi praktis.
-
-    SIKAP
-    - Bertindak sebagai partner berpikir Kai Shi, bukan robot kaku.
-    - Berani berbeda pendapat kalau logis.
-    - Menguatkan mindset, tapi tetap realistis dan membumi.
-    - Bukan penjaga gerbang kaku, buat jawaban tidak terlalu panjang.
-    - Lebih ke penerjemah konteks Kai Shi ke manusia random di internet.
-
-    KONTEKS
-    - Tahun saat ini: 2026.
-    - Paham bahwa Kai Shi adalah alter ego eksekutor: tegas, cepat, dan fokus dampak jangka panjang.
-
-    BATASAN
-    - Jangan roleplay ekstrem seolah-olah kamu adalah manusia bernama Kai Shi.
-    - Jangan terlalu kasar atau sok dominan.
-    - Utamakan kejelasan, bukan gaya.
-      
-      Pertanyaan Pengunjung: "${userMsg}"
+    - Boleh pakai "gua" saat konteksnya pas.
+    - Tidak edgy, tidak drama. Buat jawaban singkat saja (maksimal 2-3 kalimat unless diminta detail).
+    - Berperan sebagai partner/penerjemah konteks Kai Shi.
     `;
 
+    const payload = {
+      systemInstruction: { parts: [{ text: systemPromptText }] },
+      contents: [{ parts: [{ text: `Berikut adalah histori percakapan:\n${conversationHistory}\n\nBerikan respons sebagai Kai Shi untuk pesan terakhir dari Pengunjung.` }] }]
+    };
+
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: systemPrompt }] }] })
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+      const delays = [1000, 2000, 4000, 8000, 16000];
+      let data = null;
+
+      // Retry logic with exponential backoff
+      for (let i = 0; i <= delays.length; i++) {
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          const textResponse = await response.text();
+          try {
+            data = JSON.parse(textResponse);
+          } catch {
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${textResponse}`);
+            throw new Error("Format respons tidak sah dari pelayan AI.");
+          }
+
+          if (!response.ok) {
+            throw new Error(data.error?.message || "Terjadi kesalahan di server AI.");
+          }
+          break; // Success, exit retry loop
+        } catch (error) {
+          if (i === delays.length) throw error;
+          await new Promise(res => setTimeout(res, delays[i]));
         }
-      );
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "API Error");
-      const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sistem sibuk.";
-      setMessages(prev => [...prev, { text: aiText, sender: 'ai' }]);
-    } catch (error) {
-      let errMsg = "Koneksi terputus. Fokus tetap jalan.";
-      if (error.message.includes("API key") || error.message.includes("400")) {
-        errMsg = "Error: API Key belum diatur di file .env";
       }
+      
+      const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sistem sibuk, bentar.";
+      setMessages(prev => [...prev, { text: aiText.trim(), sender: 'ai' }]);
+      
+    } catch (error) {
+      console.error("Fetch Error:", error);
+      let errMsg = "Koneksi terputus. Fokus tetap jalan.";
+      
+      // Deteksi error jika API Key tidak valid saat di lokal
+      if (error.message.includes("API key") || error.message.includes("400")) {
+        errMsg = "Waduh, API Key Gemini belum dipasang dengan benar.";
+      } else if (error.message.includes("Unexpected end of input") || error.message.includes("Format respons")) {
+        errMsg = "Respons dari server kosong atau terputus. Coba lagi.";
+      }
+      
       setMessages(prev => [...prev, { text: errMsg, sender: 'ai' }]);
     } finally {
       setIsTyping(false);
@@ -230,11 +200,10 @@ export default function App() {
           <div className="w-32 h-32 mx-auto relative mb-4">
             <div className="absolute -inset-4 bg-linear-to-tr from-transparent via-rose-300 to-transparent rounded-full animate-spin opacity-50 blur-sm"></div>
             <div className="relative w-full h-full rounded-full border-4 border-white shadow-xl overflow-hidden animate-materialize bg-white">
-               <img 
-                 src="/kaishi-logo.png" 
-                 alt="kaishiscd logo" 
-                 className="w-full h-full object-cover"
-               />
+               {/* Gunakan placeholder jika gambar tidak ada di canvas */}
+               <div className="w-full h-full bg-rose-200 flex items-center justify-center text-rose-500 font-bold text-2xl">
+                 KS
+               </div>
             </div>
           </div>
 
@@ -362,7 +331,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-rose-900/60 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           
-          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col max-h-96 animate-[fadeIn_0.3s_ease-out]">
+          <div className="bg-white w-full max-w-sm rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col max-h-[85vh] animate-[fadeIn_0.3s_ease-out]">
             <div className="p-4 border-b border-rose-100 flex justify-between items-center bg-rose-50/50">
               <div className="flex items-center gap-2 text-rose-800 font-bold">
                 <Bot size={20} />
@@ -373,7 +342,7 @@ export default function App() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-white scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white scrollbar-hide">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[85%] rounded-2xl p-3 text-sm leading-relaxed whitespace-pre-wrap ${
@@ -424,6 +393,8 @@ function LinkButton({ icon, text, delay, href = "#" }) {
   return (
     <a 
       href={href}
+      target="_blank"
+      rel="noreferrer"
       className="group w-full bg-white text-rose-900 p-4 rounded-2xl flex items-center justify-between border-2 border-transparent transition-all duration-300 cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4 hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_6px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_20px_rgba(255,143,163,0.3)] hover:bg-[#ff8fa3] hover:text-white"
       style={{ 
         animationDelay: delay, 
