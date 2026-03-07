@@ -83,7 +83,6 @@ const BrandInstagramIcon = ({ size = 20, className }) => (
 
 // --- MAIN COMPONENT ---
 export default function App() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // AI Chat State
@@ -102,18 +101,15 @@ export default function App() {
     if (!input.trim()) return;
     const userMsg = input;
     
-    // 1. Update State dengan pesan User
     const newMessages = [...messages, { text: userMsg, sender: 'user' }];
     setMessages(newMessages);
     setInput('');
     setIsTyping(true);
 
-    // 2. Format histori percakapan 
     const conversationHistory = newMessages.map(msg => {
       return `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`;
     }).join('\n');
 
-    // 3. Susun System Prompt yang kuat
     const systemPromptText = `
     Kamu adalah AI asisten yang sangat memahami Kai Shi (kaishiscd).
     Tugas kamu adalah menjawab pertanyaan pengguna secara natural, termasuk pertanyaan ringan, detail, atau random, tanpa merusak konsistensi persona Kai Shi.
@@ -132,55 +128,50 @@ export default function App() {
     - Berperan sebagai partner/penerjemah konteks Kai Shi.
     `;
 
+    const combinedPrompt = `[SYSTEM INSTRUCTION: ${systemPromptText}]\n\nBerikut adalah histori percakapan:\n${conversationHistory}\n\nBerikan respons sebagai Kai Shi untuk pesan terakhir dari Pengunjung tanpa menuliskan kata "Kai Shi:" di awal kalimat.`;
+
     const payload = {
-      systemInstruction: { parts: [{ text: systemPromptText }] },
-      contents: [{ parts: [{ text: `Berikut adalah histori percakapan:\n${conversationHistory}\n\nBerikan respons sebagai Kai Shi untuk pesan terakhir dari Pengunjung.` }] }]
+      contents: [{ parts: [{ text: combinedPrompt }] }]
     };
 
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-      const delays = [1000, 2000, 4000, 8000, 16000];
-      let data = null;
-
-      // Retry logic with exponential backoff
-      for (let i = 0; i <= delays.length; i++) {
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          
-          const textResponse = await response.text();
-          try {
-            data = JSON.parse(textResponse);
-          } catch {
-            if (!response.ok) throw new Error(`HTTP ${response.status}: ${textResponse}`);
-            throw new Error("Format respons tidak sah dari pelayan AI.");
-          }
-
-          if (!response.ok) {
-            throw new Error(data.error?.message || "Terjadi kesalahan di server AI.");
-          }
-          break; // Success, exit retry loop
-        } catch (error) {
-          if (i === delays.length) throw error;
-          await new Promise(res => setTimeout(res, delays[i]));
-        }
-      }
+      const rawApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const apiKey = rawApiKey ? String(rawApiKey).replace(/['"]/g, '').trim() : ""; 
       
+      console.log("Status API Key:", apiKey ? "Berhasil dimuat" : "TIDAK TERBACA/UNDEFINED");
+
+      if (!apiKey) {
+        throw new Error("API_KEY_MISSING");
+      }
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const textResponse = await response.text();
+      
+      if (!response.ok) {
+        throw new Error(`HTTP_ERROR|${response.status}|${textResponse}`);
+      }
+
+      const data = JSON.parse(textResponse);
       const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sistem sibuk, bentar.";
-      setMessages(prev => [...prev, { text: aiText.trim(), sender: 'ai' }]);
+      setMessages(prev => [...prev, { text: aiText.replace(/^Kai Shi:\s*/i, '').trim(), sender: 'ai' }]);
       
     } catch (error) {
-      console.error("Fetch Error:", error);
-      let errMsg = "Koneksi terputus. Fokus tetap jalan.";
+      console.error("Detail Error:", error.message);
+      let errMsg = "Koneksi terputus. Coba lagi bentar.";
       
-      // Deteksi error jika API Key tidak valid saat di lokal
-      if (error.message.includes("API key") || error.message.includes("400")) {
-        errMsg = "Waduh, API Key Gemini belum dipasang dengan benar.";
-      } else if (error.message.includes("Unexpected end of input") || error.message.includes("Format respons")) {
-        errMsg = "Respons dari server kosong atau terputus. Coba lagi.";
+      if (error.message === "API_KEY_MISSING") {
+        errMsg = "Error: File .env belum terdeteksi. Jangan lupa buat file .env dan restart server (npm run dev).";
+      } else if (error.message.includes("HTTP_ERROR|404") || error.message.includes("not found")) {
+        errMsg = "Waduh, server Google masih bilang 'Not Found'.";
+      } else if (error.message.includes("HTTP_ERROR|400")) {
+        errMsg = "API Key Gemini kamu sepertinya tidak valid atau ada typo.";
       }
       
       setMessages(prev => [...prev, { text: errMsg, sender: 'ai' }]);
