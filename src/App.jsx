@@ -98,83 +98,106 @@ export default function App() {
   }, [messages, isTyping]);
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isTyping) return;
+
     const userMsg = input;
-    
-    const newMessages = [...messages, { text: userMsg, sender: 'user' }];
-    setMessages(newMessages);
     setInput('');
     setIsTyping(true);
 
-    const conversationHistory = newMessages.map(msg => {
-      return `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`;
-    }).join('\n');
-
-    const systemPromptText = `
-    Kamu adalah AI asisten yang sangat memahami Kai Shi (kaishiscd).
-    Tugas kamu adalah menjawab pertanyaan pengguna secara natural, termasuk pertanyaan ringan, detail, atau random, tanpa merusak konsistensi persona Kai Shi.
-    Ikuti pedoman berikut dengan ketat:
-
-    IDENTITAS KAI SHI
-    - Kai Shi adalah alter ego, bukan orang terpisah.
-    - Digunakan untuk konteks eksekusi, karya, dan komunikasi yang lebih tegas.
-    - Bukan figur yang dibuat untuk sensasi atau misteri berlebihan.
-    - Kai Shi itu cewek. Jawab dengan jelas, singkat, dan santai.
-
-    GAYA KOMUNIKASI
-    - Bahasa Indonesia santai, Gen Z, lugas, to the point namun juga jenaka atau sarkas.
-    - Boleh pakai "gua" saat konteksnya pas.
-    - Tidak edgy, tidak drama. Buat jawaban singkat saja (maksimal 2-3 kalimat unless diminta detail).
-    - Berperan sebagai partner/penerjemah konteks Kai Shi.
-    `;
-
-    const combinedPrompt = `[SYSTEM INSTRUCTION: ${systemPromptText}]\n\nBerikut adalah histori percakapan:\n${conversationHistory}\n\nBerikan respons sebagai Kai Shi untuk pesan terakhir dari Pengunjung tanpa menuliskan kata "Kai Shi:" di awal kalimat.`;
-
-    const payload = {
-      contents: [{ parts: [{ text: combinedPrompt }] }]
-    };
+    const updatedMessages = [...messages, { text: userMsg, sender: 'user' }];
+    setMessages(updatedMessages);
 
     try {
-      const rawApiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      const apiKey = rawApiKey ? String(rawApiKey).replace(/['"]/g, '').trim() : ""; 
-      
-      console.log("Status API Key:", apiKey ? "Berhasil dimuat" : "TIDAK TERBACA/UNDEFINED");
+
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY?.trim();
 
       if (!apiKey) {
         throw new Error("API_KEY_MISSING");
       }
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      // batasi memory chat supaya token tidak meledak
+      const lastMessages = updatedMessages.slice(-6);
+
+      const conversationHistory = lastMessages
+        .map(msg => `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`)
+        .join('\n');
+
+      const systemPrompt = `
+      Kamu adalah AI yang memahami persona Kai Shi.
+
+      Gaya bicara:
+      - santai
+      - gen z
+      - lugas
+      - maksimal 2 kalimat
+      - boleh pakai "gua"
+
+      Percakapan:
+      ${conversationHistory}
+
+      Balas pesan terakhir dari Pengunjung secara natural.
+      `;
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: systemPrompt }]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 120
+        }
+      };
+
+      const apiUrl =
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify(payload)
       });
-      
-      const textResponse = await response.text();
-      
-      if (!response.ok) {
-        throw new Error(`HTTP_ERROR|${response.status}|${textResponse}`);
+
+      if (response.status === 429) {
+        throw new Error("RATE_LIMIT");
       }
 
-      const data = JSON.parse(textResponse);
-      const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sistem sibuk, bentar.";
-      setMessages(prev => [...prev, { text: aiText.replace(/^Kai Shi:\s*/i, '').trim(), sender: 'ai' }]);
-      
-    } catch (error) {
-      console.error("Detail Error:", error.message);
-      let errMsg = "Koneksi terputus. Coba lagi bentar.";
-      
-      if (error.message === "API_KEY_MISSING") {
-        errMsg = "Error: File .env belum terdeteksi. Jangan lupa buat file .env dan restart server (npm run dev).";
-      } else if (error.message.includes("HTTP_ERROR|404") || error.message.includes("not found")) {
-        errMsg = "Waduh, server Google masih bilang 'Not Found'.";
-      } else if (error.message.includes("HTTP_ERROR|400")) {
-        errMsg = "API Key Gemini kamu sepertinya tidak valid atau ada typo.";
+      if (!response.ok) {
+        throw new Error(`HTTP_${response.status}`);
       }
-      
-      setMessages(prev => [...prev, { text: errMsg, sender: 'ai' }]);
+
+      const data = await response.json();
+
+      const aiText =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Lagi mikir bentar...";
+
+      setMessages(prev => [
+        ...prev,
+        {
+          text: aiText.replace(/^Kai Shi:\s*/i, '').trim(),
+          sender: "ai"
+        }
+      ]);
+
+    } catch (err) {
+
+      let msg = "Server lagi sibuk.";
+
+      if (err.message === "API_KEY_MISSING") {
+        msg = "API Key belum kebaca.";
+      }
+
+      if (err.message === "RATE_LIMIT") {
+        msg = "Santai dulu bentar, lagi kena rate limit 😅";
+      }
+
+      setMessages(prev => [...prev, { text: msg, sender: "ai" }]);
+
     } finally {
       setIsTyping(false);
     }
@@ -289,7 +312,7 @@ export default function App() {
                 <div className="flex flex-col">
                   <span className="font-semibold leading-tight">Join Server Discord</span>
                   <span className="text-[11px] text-rose-400 group-hover:text-rose-100 transition-colors mt-0.5">
-                    💬 Ngobrol, sharing &amp; nongkrong bareng
+                    Ngobrol, sharing &amp; nongkrong bareng
                   </span>
                 </div>
               </div>
