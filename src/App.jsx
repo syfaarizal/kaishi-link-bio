@@ -84,6 +84,7 @@ const BrandInstagramIcon = ({ size = 20, className }) => (
 // --- MAIN COMPONENT ---
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showMaintenance, setShowMaintenance] = useState(false);
   
   // AI Chat State
   const [input, setInput] = useState('');
@@ -96,6 +97,11 @@ export default function App() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
+
+  const handleMaintenanceClick = () => {
+    setShowMaintenance(true);
+    setTimeout(() => setShowMaintenance(false), 3000);
+  };
 
   const handleSendMessage = async () => {
     if (!input.trim() || isTyping) return;
@@ -262,10 +268,10 @@ export default function App() {
             href="https://kaishi.netlify.app/"
           />
 
-          {/* AI BUTTON */}
+          {/* AI BUTTON - MAINTENANCE */}
           <button
-            onClick={() => setIsModalOpen(true)}
-            className="group relative w-full bg-linear-to-r from-white to-rose-50 text-rose-900 p-4 rounded-2xl flex items-center justify-between border-2 border-[#ff8fa3] shadow-sm hover:shadow-lg hover:from-[#ff8fa3] hover:to-[#ff8fa3] hover:text-white transition-all duration-300 cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4"
+            onClick={handleMaintenanceClick}
+            className="group relative w-full bg-linear-to-r from-white to-rose-50 text-rose-400 p-4 rounded-2xl flex items-center justify-between border-2 border-rose-200 border-dashed shadow-sm transition-all duration-300 cursor-not-allowed animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4"
             style={{ 
               animationDelay: '1.5s', 
               animationFillMode: 'forwards',
@@ -273,10 +279,15 @@ export default function App() {
             }}
           >
             <div className="flex items-center gap-4">
-              <Sparkles size={20} className="text-[#ff8fa3] group-hover:text-white transition-colors" />
-              <span className="font-semibold">Tanya AI tentang Kai Shi</span>
+              <Sparkles size={20} className="text-rose-300 transition-colors" />
+              <div className="flex flex-col items-start">
+                <span className="font-semibold text-rose-400">Tanya AI tentang Kai Shi</span>
+                <span className="text-[11px] text-rose-300">Sedang dalam perbaikan</span>
+              </div>
             </div>
-            <Bot size={18} className="opacity-30 group-hover:opacity-100 group-hover:text-white transition-all" />
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-400">
+              🔧 Maintenance
+            </span>
           </button>
 
           <LinkButton 
@@ -399,6 +410,16 @@ export default function App() {
                 <Send size={18} />
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MAINTENANCE TOAST */}
+      {showMaintenance && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-[slideIn_0.3s_ease-out]">
+          <div className="flex items-center gap-3 bg-rose-900 text-white px-5 py-3 rounded-2xl shadow-xl text-sm font-medium">
+            <span>🔧</span>
+            <span>Fitur ini lagi dalam perbaikan, tunggu ya!</span>
           </div>
         </div>
       )}
