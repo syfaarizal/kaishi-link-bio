@@ -213,10 +213,15 @@ export default function App() {
         <div className="relative mb-8 text-center">
           <div className="w-32 h-32 mx-auto relative mb-4">
             <div className="absolute -inset-4 bg-linear-to-tr from-transparent via-rose-300 to-transparent rounded-full animate-spin opacity-50 blur-sm"></div>
+
             <div className="relative w-full h-full rounded-full border-4 border-white shadow-xl overflow-hidden animate-materialize bg-white">
-               <div className="w-full h-full bg-rose-200 flex items-center justify-center text-rose-500 font-bold text-2xl">
-                 <img src="/public/kaishi-logo.png" alt="Kai Shi Logo" />
-               </div>
+              <div className="w-full h-full bg-rose-200 flex items-center justify-center">
+                <img 
+                  src="/kaishi-logo.png" 
+                  alt="Kai Shi Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
           </div>
 
