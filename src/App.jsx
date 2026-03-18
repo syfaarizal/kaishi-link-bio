@@ -109,7 +109,7 @@ export default function App() {
 
     try {
 
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY?.trim();
+      const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
 
       if (!apiKey) {
         throw new Error("API_KEY_MISSING");
@@ -161,25 +161,22 @@ export default function App() {
       `;
 
       const payload = {
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: systemPrompt }]
-          }
+        model: "arcee-ai/trinity-large-preview:free",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userMsg }
         ],
-        generationConfig: {
-          temperature: 0.8,
-          maxOutputTokens: 120
-        }
+        max_tokens: 120,
+        temperature: 0.8,
       };
 
-      const apiUrl =
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+      const apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify(payload)
       });
@@ -194,14 +191,16 @@ export default function App() {
 
       const data = await response.json();
 
-      const aiText =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-        "Lagi mikir bentar...";
+      if (!data?.choices?.[0]?.message?.content) {
+        throw new Error("INVALID_RESPONSE");
+      }
+
+      const aiText = data.choices[0].message.content.replace(/^Kai Shi:\s*/i, '').trim();
 
       setMessages(prev => [
         ...prev,
         {
-          text: aiText.replace(/^Kai Shi:\s*/i, '').trim(),
+          text: aiText,
           sender: "ai"
         }
       ]);
