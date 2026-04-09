@@ -14,7 +14,7 @@ export default function DiscordCard() {
       </div>
 
       <a
-        href="https://discord.gg/px84yEsy"
+        href="https://discord.gg/KEmhZ78JCv"
         target="_blank"
         rel="noreferrer"
         className="group w-full bg-white text-rose-900 rounded-2xl flex flex-col border-2 border-dashed border-rose-200 hover:border-solid hover:border-[#ff8fa3] hover:bg-[#ff8fa3] hover:text-white transition-all duration-300 cursor-pointer hover:scale-[1.02] active:scale-[0.98] shadow-[0_4px_6px_rgba(0,0,0,0.02)] hover:shadow-[0_10px_20px_rgba(255,143,163,0.3)] overflow-hidden"
