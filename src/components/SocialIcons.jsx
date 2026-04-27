@@ -13,7 +13,7 @@ export default function SocialIcons() {
           target="_blank"
           rel="noreferrer"
           aria-label={social.label}
-          className="w-12 h-12 glass-panel rounded-full flex items-center justify-center text-red-600 border border-red-200/70 hover:bg-red-600 hover:text-white hover:-translate-y-1 hover:shadow-[0_16px_30px_var(--kaishi-red-glow)] transition-all duration-300"
+          className="w-12 h-12 glass-panel rounded-full flex items-center justify-center text-red-600 border border-red-500/70 hover:bg-red-500 hover:text-red-600 hover:-translate-y-2 hover:shadow-[0_12px_24px_rgba(220,38,38,0.16)] transition-all duration-500 ease-out"
         >
           <social.Icon size={20} />
         </a>

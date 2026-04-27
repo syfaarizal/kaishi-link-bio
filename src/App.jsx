@@ -29,7 +29,7 @@ export default function App() {
           {/* AI Chat Button */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="group relative w-full glass-panel text-red-950 p-4 rounded-2xl flex items-center justify-between border border-red-200/70 shadow-sm hover:-translate-y-1 hover:shadow-[0_18px_36px_var(--kaishi-red-glow)] hover:text-white transition-all duration-300 cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-4 overflow-hidden"
+            className="group relative w-full glass-panel text-red-950 p-4 rounded-2xl flex items-center justify-between border border-red-200/70 shadow-sm hover:-translate-y-0.5 hover:shadow-[0_16px_28px_rgba(220,38,38,0.22)] hover:text-white transition-all duration-500 ease-out cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-1 overflow-hidden"
             style={{ animationDelay: '1.5s', animationFillMode: 'forwards' }}
           >
             <div className="absolute inset-0 bg-linear-to-r from-red-700 via-red-600 to-red-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
