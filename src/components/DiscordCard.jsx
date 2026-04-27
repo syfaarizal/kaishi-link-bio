@@ -22,7 +22,7 @@ export default function DiscordCard() {
       >
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <div className="text-[#ff8fa3] transition-colors group-hover:text-white">
+            <div className="text-[#8fadff] transition-colors group-hover:text-white">
               <BrandDiscordIcon size={20} />
             </div>
             <div className="flex flex-col">
