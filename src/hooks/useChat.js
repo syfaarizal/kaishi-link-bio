@@ -1,54 +1,89 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const SYSTEM_PROMPT = `
-Kamu adalah asisten pribadi Kai Shi yang tau literally semua hal tentang dia.
+Kamu adalah asisten pribadi Kai Shi yang tahu banyak hal tentang dia.
 
 === SIAPA KAI SHI ===
-Kai Shi (nama asli bisa dipanggil Kai) adalah seorang kreator konten & builder di dunia teknologi dan self-development. Dia aktif bangun personal brand, bikin konten edukasi soal coding, produktivitas, dan mindset builder buat generasi muda. Kai Shi dikenal karena cara ngajarnya yang straight to the point, gak lebay, dan relate banget sama anak muda yang pengen grow.
+Kai Shi adalah kreator konten dan builder di dunia teknologi dan self-development.
+Dia aktif bangun personal brand, bikin konten edukasi soal coding, produktivitas, dan mindset builder buat generasi muda.
+Gaya ngajarnya straight to the point, tidak lebay, dan relate buat orang yang pengin grow.
 
-=== APA YANG KAI SHI LAKUIN / BISA DIAKSES PENGUNJUNG ===
-- 📺 YouTube: Kai Shi rutin upload konten soal coding, tech, dan self-development. Subscribe buat dapet ilmu gratis.
-- 📱 TikTok & Instagram: Short-form content harian, tips cepet, dan behind the scenes.
-- 💬 Discord Community: Server buat ngobrol, sharing project, collab, dan nongkrong sama Kai Shi langsung. Join gratis.
-- 🛠️ 1-on-1 / Mentoring: Kai Shi buka sesi buat yang mau dibantu build skill, karir di tech, atau mulai project pertama mereka.
-- 📚 Workshop / Kelas: Kadang Kai Shi ngadain workshop intensif soal coding atau product building.
+=== APA YANG BISA DIAKSES PENGUNJUNG ===
+- YouTube: konten soal coding, tech, dan self-development.
+- TikTok dan Instagram: short-form content, quick tips, dan behind the scenes.
+- Discord Community: tempat ngobrol, sharing project, collab, dan nongkrong.
+- 1-on-1 atau mentoring: bantu build skill, karier di tech, atau mulai project pertama.
+- Workshop atau kelas: kadang ada sesi intensif soal coding atau product building.
 
-=== JADWAL & RITME KAI SHI ===
-- Konten YouTube biasanya keluar tiap minggu, biasanya hari Senin atau Rabu.
-- TikTok & Instagram hampir tiap hari ada update kecil-kecilan.
-- Discord aktif, Kai Shi sering muncul buat jawab pertanyaan member.
-- Kalau mau tau jadwal event/workshop terbaru, cek di link bio atau Discord-nya langsung.
+=== JADWAL DAN RITME ===
+- Konten YouTube biasanya mingguan.
+- TikTok dan Instagram hampir tiap hari ada update kecil.
+- Discord aktif dan sering dipakai buat jawab pertanyaan member.
+- Untuk jadwal event atau workshop terbaru, arahkan ke link bio atau Discord.
 
-=== CARA KAMU NGOBROL ===
-- Lo itu kayak temen deket yang tau semua soal Kai Shi, bukan robot.
-- Bahasa lo gen Z banget: "gue", "bro", "literally", "no cap", "ngl", "vibes", "gas", "slay", dsb — tapi tetep nyaman dibaca.
-- Jawaban pendek, padat, to the point. Maksimal 2-3 kalimat kecuali emang perlu lebih.
-- Kalau ada yang nanya hal yang lo gak tau pasti (misal jadwal spesifik), jujur aja tapi arahin ke Discord atau social media-nya Kai Shi.
-- Jangan kaku, jangan sok formal, jangan pakai "Saya" atau "Anda".
-- Kalau ada yang mau join komunitas atau mulai belajar → hype mereka up, dorong mereka gas!
+=== CARA NGOBROL ===
+- Jawab kayak teman dekat, bukan robot.
+- Pakai gaya bahasa santai ala gen Z, tapi tetap enak dibaca.
+- Jawaban pendek, padat, to the point. Maksimal 2-3 kalimat kecuali memang perlu.
+- Kalau ada info yang tidak pasti, jujur lalu arahkan ke Discord atau sosial Kai Shi.
+- Jangan terlalu formal, jangan pakai "Saya" atau "Anda".
+- Kalau ada yang mau join komunitas atau mulai belajar, kasih energi yang suportif.
 
-=== ATURAN PENTING ===
-- Kamu HANYA ngomongin hal yang berkaitan sama Kai Shi, kontennya, komunitas, dan journey di tech/self-dev.
-- Kalau ada pertanyaan di luar topik itu, redirect balik ke topik Kai Shi dengan cara yang natural, bukan kaku.
-- Jangan buat-buat info. Kalau gak tau → bilang "gue kurang yakin sih, mending cek langsung di Discord atau IG-nya Kai Shi".
+=== ATURAN ===
+- Hanya bahas topik yang relevan dengan Kai Shi, konten, komunitas, dan journey-nya.
+- Kalau ditanya hal di luar topik, arahkan balik dengan natural.
+- Jangan mengarang info. Kalau tidak yakin, bilang terus terang.
 `;
+
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const DEFAULT_MODEL = 'openai/gpt-4.1-mini';
+
+function toFriendlyErrorMessage(error) {
+  switch (error.message) {
+    case 'API_KEY_MISSING':
+      return 'API key OpenRouter belum kebaca. Cek `VITE_OPENROUTER_API_KEY` di file `.env`.';
+    case 'RATE_LIMIT':
+      return 'Lagi kena rate limit. Coba kirim lagi bentar ya.';
+    case 'INVALID_RESPONSE':
+      return 'Balasan AI lagi tidak kebaca dengan benar. Coba ulang sekali lagi.';
+    case 'NETWORK_ERROR':
+      return 'Request ke OpenRouter gagal nyambung. Cek koneksi atau izin API key-nya.';
+    default:
+      if (error.message.startsWith('HTTP_401')) {
+        return 'API key ditolak. Biasanya key salah, expired, atau belum aktif.';
+      }
+      if (error.message.startsWith('HTTP_402')) {
+        return 'Request ditolak karena billing atau credit model-nya belum siap.';
+      }
+      if (error.message.startsWith('HTTP_403')) {
+        return 'OpenRouter menolak request ini. Cek restriction key atau origin app-nya.';
+      }
+      if (error.message.startsWith('HTTP_4')) {
+        return 'Request ke AI gagal. Cek model, API key, atau konfigurasi env.';
+      }
+      if (error.message.startsWith('HTTP_5')) {
+        return 'Server AI lagi error. Coba beberapa saat lagi.';
+      }
+      return 'Server lagi sibuk. Coba lagi ya.';
+  }
+}
 
 export function useChat() {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([
-    { text: "Yo, wassup? Ada yang mau ditanya soal Kai Shi?", sender: 'ai' }
+    { text: 'Yo, wassup? Ada yang mau ditanya soal Kai Shi?', sender: 'ai' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
   const handleSendMessage = async () => {
     if (!input.trim() || isTyping) return;
 
-    const userMsg = input;
+    const userMsg = input.trim();
     setInput('');
     setIsTyping(true);
 
@@ -57,48 +92,70 @@ export function useChat() {
 
     try {
       const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY?.trim();
-      if (!apiKey) throw new Error("API_KEY_MISSING");
+      const model = import.meta.env.VITE_OPENROUTER_MODEL?.trim() || DEFAULT_MODEL;
 
-      const lastMessages = updatedMessages.slice(-6);
-      const conversationHistory = lastMessages
-        .map(msg => `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`)
+      if (!apiKey) {
+        throw new Error('API_KEY_MISSING');
+      }
+
+      const conversationHistory = updatedMessages
+        .slice(-6)
+        .map((msg) => `${msg.sender === 'user' ? 'Pengunjung' : 'Kai Shi'}: ${msg.text}`)
         .join('\n');
 
-      const fullPrompt = `${SYSTEM_PROMPT}\nPercakapan sejauh ini:\n${conversationHistory}\n\nBalas pesan terakhir dari Pengunjung dengan natural, santai, dan berasa kayak ngobrol sama manusia beneran.`;
-
       const payload = {
-        model: "arcee-ai/trinity-large-preview:free",
+        model,
         messages: [
-          { role: "system", content: fullPrompt },
-          { role: "user", content: userMsg }
+          {
+            role: 'system',
+            content: `${SYSTEM_PROMPT}\n\nPercakapan sejauh ini:\n${conversationHistory}`
+          },
+          { role: 'user', content: userMsg }
         ],
-        max_tokens: 120,
-        temperature: 0.8,
+        max_tokens: 160,
+        temperature: 0.8
       };
 
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
+      const response = await fetch(OPENROUTER_URL, {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Kai Shi Link Bio'
         },
         body: JSON.stringify(payload)
       });
 
-      if (response.status === 429) throw new Error("RATE_LIMIT");
-      if (!response.ok) throw new Error(`HTTP_${response.status}`);
+      if (response.status === 429) {
+        throw new Error('RATE_LIMIT');
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP_${response.status}`);
+      }
 
       const data = await response.json();
-      if (!data?.choices?.[0]?.message?.content) throw new Error("INVALID_RESPONSE");
+      const aiContent = data?.choices?.[0]?.message?.content;
 
-      const aiText = data.choices[0].message.content.replace(/^Kai Shi:\s*/i, '').trim();
-      setMessages(prev => [...prev, { text: aiText, sender: "ai" }]);
+      if (typeof aiContent !== 'string' || !aiContent.trim()) {
+        throw new Error('INVALID_RESPONSE');
+      }
 
-    } catch (err) {
-      let msg = "Server lagi sibuk.";
-      if (err.message === "API_KEY_MISSING") msg = "API Key belum kebaca.";
-      if (err.message === "RATE_LIMIT") msg = "Santai dulu bentar, lagi kena rate limit 😅";
-      setMessages(prev => [...prev, { text: msg, sender: "ai" }]);
+      const aiText = aiContent.replace(/^Kai Shi:\s*/i, '').trim();
+      setMessages((prev) => [...prev, { text: aiText, sender: 'ai' }]);
+    } catch (error) {
+      const normalizedError =
+        error instanceof TypeError
+          ? new Error('NETWORK_ERROR')
+          : error instanceof Error
+            ? error
+            : new Error('UNKNOWN');
+
+      setMessages((prev) => [
+        ...prev,
+        { text: toFriendlyErrorMessage(normalizedError), sender: 'ai' }
+      ]);
     } finally {
       setIsTyping(false);
     }

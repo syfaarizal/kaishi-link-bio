@@ -32,7 +32,8 @@ Optimized for **Vercel** deployment.
 Environment variables required:
 
 ```
-VITE_GEMINI_API_KEY=your_api_key_here
+VITE_OPENROUTER_API_KEY=your_api_key_here
+VITE_OPENROUTER_MODEL=openai/gpt-4.1-mini
 ```
 
 ## 📁 Notes
