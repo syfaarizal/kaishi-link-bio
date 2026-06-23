@@ -14,33 +14,46 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-pattern text-red-50 font-sans flex justify-center p-6 selection:bg-red-500/40 selection:text-white">
+    <div className="min-h-screen bg-pattern text-white font-sans flex justify-center px-5 py-8 selection:bg-[#5A0F14]/50 selection:text-white">
       <style>{customStyles}</style>
 
-      <div className="w-full max-w-md flex flex-col items-center py-10">
+      <div className="w-full max-w-[390px] flex flex-col items-center pt-8 pb-12">
 
         <ProfileSection />
         <SocialIcons />
 
-        <div className="w-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-3">
 
+          {/* Featured links: Portfolio + Kichi */}
           <LinkButton {...LINK_BUTTONS[0]} />
+          <LinkButton {...LINK_BUTTONS[1]} />
 
-          {/* AI Chat Button */}
+          {/* AI Chat — primary CTA, maroon filled */}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="group relative w-full glass-panel text-red-950 p-4 rounded-2xl flex items-center justify-between border border-red-200/70 shadow-sm hover:-translate-y-0.5 hover:shadow-[0_16px_28px_rgba(220,38,38,0.22)] hover:text-white transition-all duration-500 ease-out cursor-pointer animate-[slideIn_0.6s_ease-out_forwards] opacity-0 translate-y-1 overflow-hidden"
-            style={{ animationDelay: '1.5s', animationFillMode: 'forwards' }}
+            className="ai-btn group w-full rounded-2xl flex items-center justify-between px-4 py-4 cursor-pointer animate-[slideIn_0.5s_ease-out_forwards] opacity-0"
+            style={{ animationDelay: '1.65s', animationFillMode: 'forwards' }}
           >
-            <div className="absolute inset-0 bg-linear-to-r from-red-700 via-red-600 to-red-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <div className="flex items-center gap-4">
-              <Sparkles size={20} className="relative z-10 text-red-600 group-hover:text-white transition-colors" />
-              <span className="relative z-10 font-semibold">Tanya AI tentang Kai Shi</span>
+            <div className="flex items-center gap-3.5">
+              <span
+                className="flex items-center justify-center w-9 h-9 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.12)' }}
+              >
+                <Sparkles size={17} className="text-white/90" />
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="font-semibold text-[14.5px] text-white leading-tight">
+                  Tanya AI tentang Kai Shi
+                </span>
+                <span className="text-[11px] font-medium text-white/55">
+                  Powered by Claude
+                </span>
+              </div>
             </div>
-            <Bot size={18} className="relative z-10 opacity-40 group-hover:opacity-100 group-hover:text-white transition-all" />
+            <Bot size={16} className="text-white/40 group-hover:text-white/70 transition-colors" />
           </button>
 
-          <LinkButton {...LINK_BUTTONS[1]} />
+          {/* Bisik-bisik */}
           <LinkButton {...LINK_BUTTONS[2]} />
 
           <DiscordCard />
@@ -48,10 +61,15 @@ export default function App() {
         </div>
 
         <footer
-          className="mt-12 text-xs text-red-100/70 animate-[fadeUp_1s_ease-out_2s_forwards] opacity-0"
-          style={{ animationDelay: '2s', animationFillMode: 'forwards' }}
+          className="mt-10 text-[11px] font-medium animate-[fadeUp_0.8s_ease-out_forwards] opacity-0"
+          style={{
+            animationDelay: '2.2s',
+            animationFillMode: 'forwards',
+            color: 'rgba(255,255,255,0.2)',
+            letterSpacing: '0.04em',
+          }}
         >
-          &copy; 2026 kaishiscd. All rights reserved.
+          &copy; 2026 kaishiscd
         </footer>
 
       </div>
