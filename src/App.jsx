@@ -17,7 +17,7 @@ export default function App() {
     <div className="min-h-screen bg-pattern text-white font-sans flex justify-center px-5 py-8 selection:bg-[#5A0F14]/50 selection:text-white">
       <style>{customStyles}</style>
 
-      <div className="w-full max-w-[390px] flex flex-col items-center pt-8 pb-12">
+      <div className="w-full max-w-97.5 flex flex-col items-center pt-8 pb-12">
 
         <ProfileSection />
         <SocialIcons />

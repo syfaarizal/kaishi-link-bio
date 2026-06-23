@@ -25,7 +25,7 @@ export default function ChatModal({ onClose }) {
       >
         {/* Header */}
         <div
-          className="px-5 py-4 flex justify-between items-center flex-shrink-0"
+          className="px-5 py-4 flex justify-between items-center shrink-0"
           style={{
             background: 'linear-gradient(135deg, #5A0F14 0%, #8B1A22 100%)',
             borderBottom: '1px solid rgba(255,255,255,0.06)',
@@ -33,7 +33,7 @@ export default function ChatModal({ onClose }) {
         >
           <div className="flex items-center gap-3">
             <div
-              className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+              className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
               style={{ background: 'rgba(255,255,255,0.12)' }}
             >
               <Bot size={17} className="text-white" />
@@ -96,7 +96,7 @@ export default function ChatModal({ onClose }) {
           {isTyping && (
             <div className="flex justify-start">
               <div
-                className="rounded-2xl rounded-bl-[4px] px-4 py-3 flex items-center gap-1.5"
+                className="rounded-2xl rounded-bl-2 px-4 py-3 flex items-center gap-1.5"
                 style={{
                   background: 'white',
                   border: '1px solid rgba(200,180,182,0.35)',
@@ -122,7 +122,7 @@ export default function ChatModal({ onClose }) {
 
         {/* Input */}
         <div
-          className="px-4 py-3 flex gap-2.5 flex-shrink-0"
+          className="px-4 py-3 flex gap-2.5 shrink-0"
           style={{
             background: 'white',
             borderTop: '1px solid rgba(200,180,182,0.28)',
@@ -152,7 +152,7 @@ export default function ChatModal({ onClose }) {
           <button
             onClick={handleSendMessage}
             disabled={!input.trim() || isTyping}
-            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 flex-shrink-0"
+            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 shrink-0"
             style={{
               background: 'linear-gradient(135deg, #5A0F14 0%, #8B1A22 100%)',
               color: 'white',

@@ -21,7 +21,7 @@ export default function ProfileSection() {
         />
         {/* Avatar */}
         <div className="relative w-full h-full rounded-full border-2 border-white/10 shadow-2xl overflow-hidden animate-materialize bg-black">
-          <div className="w-full h-full bg-gradient-to-br from-[#1a0608] via-black to-[#2a0a10] flex items-center justify-center">
+          <div className="w-full h-full bg-gradient from-[#1a0608] via-black to-[#2a0a10] flex items-center justify-center">
             <img
               src="/libr-logo-black.png"
               alt="Kai Shi Logo"
