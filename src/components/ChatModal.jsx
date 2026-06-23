@@ -5,7 +5,7 @@ export default function ChatModal({ onClose }) {
   const { input, setInput, messages, isTyping, chatEndRef, handleSendMessage } = useChat();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 backdrop-blur-sm"
@@ -14,9 +14,10 @@ export default function ChatModal({ onClose }) {
       />
 
       <div
-        className="relative w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col"
+        className="relative w-full rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col"
         style={{
-          maxHeight: '88vh',
+          maxWidth: '380px',
+          height: '560px',
           background: '#FAFAFA',
           border: '1px solid rgba(200,180,182,0.25)',
           boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(90,15,20,0.22)',
