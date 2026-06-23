@@ -1,9 +1,5 @@
 import { ChevronRight } from 'lucide-react';
 
-/**
- * variant: "default" | "featured"
- * featured cards (Portfolio, Kichi) get a slightly elevated treatment.
- */
 export default function LinkButton({ icon, text, delay, href = "#", variant = "default", badge }) {
   const isFeatured = variant === 'featured';
 

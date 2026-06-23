@@ -29,7 +29,7 @@ export const LINK_BUTTONS = [
     icon: <KichiIcon size={18} />,
     text: "Kichi",
     delay: "1.55s",
-    href: "https://kichi.kaishi.dev/",
+    href: "https://kichi-landing.vercel.app/",
     variant: "featured",
     badge: "Discord Bot · buatan sendiri",
   },
