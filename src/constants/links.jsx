@@ -38,6 +38,6 @@ export const LINK_BUTTONS = [
     text: "Bisik-bisik",
     delay: "1.7s",
     href: "https://bisik-bisik.vercel.app/",
-    variant: "default",
+    variant: "featured",
   },
 ];
