@@ -23,15 +23,15 @@ export const LINK_BUTTONS = [
     delay: "1.4s",
     href: "https://kaishi.netlify.app/",
     variant: "featured",
-    badge: "kaishi.netlify.app",
+    badge: "Software Engineer",
   },
   {
     icon: <KichiIcon size={18} />,
     text: "Kichi",
     delay: "1.55s",
-    href: "https://kichi-landing.vercel.app/",
+    href: "https://kichi.web.id",
     variant: "featured",
-    badge: "Discord Bot · buatan sendiri",
+    badge: "Discord bot AI",
   },
   {
     icon: <FaUserSecretIcon size={18} />,
@@ -39,5 +39,6 @@ export const LINK_BUTTONS = [
     delay: "1.7s",
     href: "https://bisik-bisik.vercel.app/",
     variant: "featured",
+    badge: "Bisikin apa aja",
   },
 ];

@@ -41,7 +41,7 @@ export default function DiscordCard() {
                 className="text-[11px] font-medium transition-colors duration-300"
                 style={{ color: '#8B4048' }}
               >
-                Ngobrol, sharing &amp; nongkrong bareng
+                Sharing knowledge and support
               </span>
             </div>
           </div>
@@ -68,7 +68,7 @@ export default function DiscordCard() {
         >
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
           <span className="text-[11px] font-medium" style={{ color: '#5A3A3D' }}>
-            Online sekarang
+            Online now
           </span>
         </div>
       </a>

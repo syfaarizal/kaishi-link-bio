@@ -45,8 +45,8 @@ export default function App() {
                 <span className="font-semibold text-[14.5px] text-white leading-tight">
                   Tanya AI tentang Kai Shi
                 </span>
-                <span className="text-[11px] font-medium text-white/55">
-                  Powered by Claude
+                <span className="text-[11px] font-medium text-white/55 text-left">
+                  Ask AI anything about Kai Shi
                 </span>
               </div>
             </div>
