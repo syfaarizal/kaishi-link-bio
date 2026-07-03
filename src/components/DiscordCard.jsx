@@ -10,7 +10,7 @@ export default function DiscordCard() {
         style={{ opacity: 0, animation: 'slideIn 0.5s ease-out 2s forwards' }}
       >
         <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
-        <span className="section-label">Komunitas</span>
+        <span className="section-label">Community</span>
         <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
       </div>
 
