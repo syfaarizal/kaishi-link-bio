@@ -1,27 +1,63 @@
+import { useState, useEffect } from 'react';
 import { Bot, X, Send, Sparkles } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 
 export default function ChatModal({ onClose }) {
   const { input, setInput, messages, isTyping, chatEndRef, handleSendMessage } = useChat();
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const updateDimensions = () => {
+      setIsMobile(window.innerWidth < 640);
+      if (window.visualViewport) {
+        setViewportHeight(window.visualViewport.height);
+      } else {
+        setViewportHeight(window.innerHeight);
+      }
+    };
+
+    updateDimensions();
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateDimensions);
+      window.visualViewport.addEventListener('scroll', updateDimensions);
+    } else {
+      window.addEventListener('resize', updateDimensions);
+    }
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateDimensions);
+        window.visualViewport.removeEventListener('scroll', updateDimensions);
+      } else {
+        window.removeEventListener('resize', updateDimensions);
+      }
+    };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${isMobile ? 'p-0' : 'p-4'}`}>
+      {/* Backdrop - only visible on desktop */}
       <div
         className="absolute inset-0 backdrop-blur-sm"
-        style={{ background: 'rgba(8,3,4,0.82)' }}
+        style={{
+          background: 'rgba(8,3,4,0.82)',
+          display: isMobile ? 'none' : 'block',
+        }}
         onClick={onClose}
       />
 
       <div
-        className="relative w-full rounded-3xl shadow-2xl z-10 overflow-hidden flex flex-col"
+        className={`relative w-full z-10 overflow-hidden flex flex-col ${isMobile ? 'rounded-none' : 'rounded-3xl shadow-2xl'}`}
         style={{
-          maxWidth: '380px',
-          height: '560px',
+          maxWidth: isMobile ? '100%' : '380px',
+          height: isMobile ? `${viewportHeight}px` : '560px',
           background: '#FAFAFA',
-          border: '1px solid rgba(200,180,182,0.25)',
-          boxShadow: '0 40px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(90,15,20,0.22)',
-          animation: 'slideIn 0.32s cubic-bezier(0.22,0.61,0.36,1)',
+          border: isMobile ? 'none' : '1px solid rgba(200,180,182,0.25)',
+          boxShadow: isMobile ? 'none' : '0 40px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(90,15,20,0.22)',
+          animation: isMobile ? 'none' : 'slideIn 0.32s cubic-bezier(0.22,0.61,0.36,1)',
         }}
       >
         {/* Header */}
@@ -46,14 +82,16 @@ export default function ChatModal({ onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 cursor-pointer"
             style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}
             onMouseEnter={e => {
+              if (isMobile) return;
               e.currentTarget.style.background = 'rgba(255,255,255,0.16)';
               e.currentTarget.style.color = 'white';
               e.currentTarget.style.transform = 'rotate(90deg)';
             }}
             onMouseLeave={e => {
+              if (isMobile) return;
               e.currentTarget.style.background = 'rgba(255,255,255,0.08)';
               e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
               e.currentTarget.style.transform = 'rotate(0deg)';
