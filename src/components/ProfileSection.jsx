@@ -43,7 +43,7 @@ export default function ProfileSection() {
           Kai Shi
         </h1>
         <p className="text-[13px] font-medium text-white/45 tracking-[0.08em] uppercase">
-          Digital Creator&nbsp;&nbsp;·&nbsp;&nbsp;Front-End Developer
+          Digital Creator&nbsp;&nbsp;|&nbsp;&nbsp;Fullstack Developer
         </p>
       </div>
     </div>
