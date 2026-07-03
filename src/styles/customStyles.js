@@ -28,6 +28,11 @@ const customStyles = `
     70% { transform: scale(1.03) rotate(1deg); filter: blur(1px) saturate(1.2); }
     100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0) saturate(1); }
   }
+  @keyframes logoSpinEntrance {
+    0% { transform: rotate(-360deg) scale(0.6); opacity: 0; }
+    30% { opacity: 0.5; }
+    100% { transform: rotate(0deg) scale(1); opacity: 1; }
+  }
 
   :root {
     --maroon: #5A0F14;
@@ -49,6 +54,10 @@ const customStyles = `
 
   .animate-materialize {
     animation: avatarReveal 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  }
+
+  .logo-spin-entrance {
+    animation: logoSpinEntrance 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
 
   /* Rich dark background: near-black with a faint maroon warmth and subtle dot grid */
@@ -73,11 +82,13 @@ const customStyles = `
     -webkit-backdrop-filter: blur(20px);
   }
 
-  /* Card with left accent bar — the signature micro-detail */
+  /* Card transition tuning - unified buttery-smooth bezier */
   .link-card {
     position: relative;
     overflow: hidden;
-    transition: transform 0.28s cubic-bezier(0.22,0.61,0.36,1), box-shadow 0.28s ease, border-color 0.28s ease;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .link-card::before {
     content: '';
@@ -88,14 +99,15 @@ const customStyles = `
     background: linear-gradient(to bottom, var(--maroon-bright), var(--maroon));
     opacity: 0;
     transform: scaleY(0.4);
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22,0.61,0.36,1);
+    transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .link-card:hover::before {
     opacity: 1;
     transform: scaleY(1);
   }
   .link-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2.5px);
     box-shadow:
       0 1px 0 0 rgba(255,255,255,0.06) inset,
       0 28px 64px rgba(0,0,0,0.5),
@@ -104,6 +116,14 @@ const customStyles = `
   }
   .link-card:active {
     transform: translateY(0px) scale(0.99);
+  }
+
+  /* Card child elements transition synchronization */
+  .card-icon, .card-text, .card-chevron {
+    transition: color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   /* Featured card (Portfolio + Kichi) — elevated prominence */
@@ -117,7 +137,7 @@ const customStyles = `
     inset: 0;
     background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-bright) 100%);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
     border-radius: inherit;
   }
   .link-card-featured:hover::after {
@@ -126,9 +146,11 @@ const customStyles = `
   .link-card-featured:hover .card-content {
     position: relative;
     z-index: 1;
-    color: white !important;
   }
-  .link-card-featured:hover .card-icon,
+  .link-card-featured:hover .card-icon {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
   .link-card-featured:hover .card-text,
   .link-card-featured:hover .card-chevron {
     color: white !important;
@@ -142,10 +164,12 @@ const customStyles = `
       0 20px 48px rgba(90,15,20,0.38),
       0 4px 12px rgba(90,15,20,0.25),
       0 1px 0 rgba(255,255,255,0.08) inset;
-    transition: transform 0.25s cubic-bezier(0.22,0.61,0.36,1), box-shadow 0.25s ease, filter 0.25s ease;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                filter 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .ai-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2.5px);
     box-shadow:
       0 28px 60px rgba(90,15,20,0.48),
       0 8px 20px rgba(90,15,20,0.3),
@@ -176,16 +200,40 @@ const customStyles = `
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* Discord card specific overrides */
+  /* Social Icons styling with smooth hover */
+  .social-icon-btn {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.55);
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .social-icon-btn:hover {
+    background: rgba(160,28,40,0.85) !important;
+    border: 1px solid rgba(160,28,40,0.6) !important;
+    color: white !important;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(90,15,20,0.45);
+  }
+  .social-icon-btn:active {
+    transform: translateY(-1px) scale(0.97);
+  }
+
+  /* Discord card specific overrides with matching transitions */
   .discord-card {
     background: rgba(255,255,255,0.97);
     border: 1.5px dashed rgba(160,28,40,0.25);
-    transition: border-style 0.2s, border-color 0.25s, transform 0.28s cubic-bezier(0.22,0.61,0.36,1), box-shadow 0.28s ease;
+    transition: border-color 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.35s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .discord-card:hover {
     border-style: solid;
     border-color: rgba(160,28,40,0.5);
-    transform: translateY(-2px);
+    transform: translateY(-2.5px);
     box-shadow:
       0 28px 64px rgba(0,0,0,0.5),
       0 8px 24px rgba(90,15,20,0.22);

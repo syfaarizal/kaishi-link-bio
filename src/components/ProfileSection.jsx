@@ -25,7 +25,7 @@ export default function ProfileSection() {
             <img
               src="/libr-logo-black.png"
               alt="Kai Shi Logo"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain logo-spin-entrance"
             />
           </div>
         </div>

@@ -23,7 +23,8 @@ export const LINK_BUTTONS = [
     delay: "1.4s",
     href: "https://kaishi.netlify.app/",
     variant: "featured",
-    badge: "Software Engineer",
+    badge: "Under Maintenance",
+    disabled: true,
   },
   {
     icon: <KichiIcon size={18} />,
@@ -39,6 +40,6 @@ export const LINK_BUTTONS = [
     delay: "1.7s",
     href: "https://bisik-bisik.vercel.app/",
     variant: "featured",
-    badge: "Bisikin apa aja",
+    badge: "Whisper whatever you want",
   },
 ];
