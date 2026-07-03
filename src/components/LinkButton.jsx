@@ -18,7 +18,7 @@ export default function LinkButton({ icon, text, delay, href = "#", variant = "d
       target={disabled ? undefined : "_blank"}
       rel={disabled ? undefined : "noreferrer"}
       onClick={handleClick}
-      className={`link-card ${isFeatured ? 'link-card-featured' : ''} ${disabled ? 'opacity-90' : ''} group w-full rounded-2xl flex items-center justify-between p-4 animate-[slideIn_0.5s_ease-out_forwards] opacity-0`}
+      className={`link-card ${isFeatured ? 'link-card-featured' : ''} ${disabled ? 'link-card-disabled' : ''} group w-full rounded-2xl flex items-center justify-between p-4 animate-[slideIn_0.5s_ease-out_forwards] opacity-0`}
       style={{
         animationDelay: delay,
         animationFillMode: 'forwards',

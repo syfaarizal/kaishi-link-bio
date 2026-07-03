@@ -180,6 +180,22 @@ const customStyles = `
     transform: translateY(0) scale(0.99);
   }
 
+  /* Disabled link card opacity management to avoid entrance transitions conflict */
+  .link-card-disabled .card-content {
+    opacity: 0.75;
+    transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .link-card-disabled:hover .card-content {
+    opacity: 1;
+  }
+  .link-card-disabled .card-chevron {
+    opacity: 0.5;
+    transition: opacity 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .link-card-disabled:hover .card-chevron {
+    opacity: 0.8;
+  }
+
   /* Glow rings behind avatar */
   .avatar-glow-outer {
     animation: pulseGlow 4s ease-in-out infinite;
