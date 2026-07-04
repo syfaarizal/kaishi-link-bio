@@ -7,14 +7,17 @@ export default function ChatModal({ onClose }) {
 
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+  const [viewportOffsetTop, setViewportOffsetTop] = useState(0);
 
   useEffect(() => {
     const updateDimensions = () => {
       setIsMobile(window.innerWidth < 640);
       if (window.visualViewport) {
         setViewportHeight(window.visualViewport.height);
+        setViewportOffsetTop(window.visualViewport.offsetTop);
       } else {
         setViewportHeight(window.innerHeight);
+        setViewportOffsetTop(0);
       }
     };
 
@@ -38,7 +41,13 @@ export default function ChatModal({ onClose }) {
   }, []);
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center ${isMobile ? 'p-0' : 'p-4'}`}>
+    <div
+      className={`fixed z-50 ${isMobile ? 'inset-x-0' : 'inset-0 flex items-center justify-center p-4'}`}
+      style={isMobile ? {
+        top: `${viewportOffsetTop}px`,
+        height: `${viewportHeight}px`,
+      } : {}}
+    >
       {/* Backdrop - only visible on desktop */}
       <div
         className="absolute inset-0 backdrop-blur-sm"
@@ -50,10 +59,10 @@ export default function ChatModal({ onClose }) {
       />
 
       <div
-        className={`relative w-full z-10 overflow-hidden flex flex-col ${isMobile ? 'rounded-none' : 'rounded-3xl shadow-2xl'}`}
+        className={`relative w-full z-10 overflow-hidden flex flex-col ${isMobile ? 'h-full rounded-none' : 'rounded-3xl shadow-2xl'}`}
         style={{
           maxWidth: isMobile ? '100%' : '380px',
-          height: isMobile ? `${viewportHeight}px` : '560px',
+          height: isMobile ? '100%' : '560px',
           background: '#FAFAFA',
           border: isMobile ? 'none' : '1px solid rgba(200,180,182,0.25)',
           boxShadow: isMobile ? 'none' : '0 40px 80px rgba(0,0,0,0.6), 0 8px 24px rgba(90,15,20,0.22)',
@@ -77,7 +86,7 @@ export default function ChatModal({ onClose }) {
             </div>
             <div>
               <p className="text-white font-semibold text-[14px] leading-tight">Kai Shi AI</p>
-              <p className="text-white/45 text-[11px] font-medium">Tanya apa saja tentang Kai Shi</p>
+              <p className="text-white/45 text-[11px] font-medium">Ask something about Kai Shi</p>
             </div>
           </div>
           <button
@@ -113,18 +122,18 @@ export default function ChatModal({ onClose }) {
                 style={
                   msg.sender === 'user'
                     ? {
-                        background: 'linear-gradient(135deg, #5A0F14 0%, #8B1A22 100%)',
-                        color: 'white',
-                        borderBottomRightRadius: '4px',
-                        boxShadow: '0 8px 20px rgba(90,15,20,0.30)',
-                      }
+                      background: 'linear-gradient(135deg, #5A0F14 0%, #8B1A22 100%)',
+                      color: 'white',
+                      borderBottomRightRadius: '4px',
+                      boxShadow: '0 8px 20px rgba(90,15,20,0.30)',
+                    }
                     : {
-                        background: 'white',
-                        color: '#1A0810',
-                        borderBottomLeftRadius: '4px',
-                        border: '1px solid rgba(200,180,182,0.35)',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                      }
+                      background: 'white',
+                      color: '#1A0810',
+                      borderBottomLeftRadius: '4px',
+                      border: '1px solid rgba(200,180,182,0.35)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    }
                 }
               >
                 {msg.text}
@@ -172,7 +181,7 @@ export default function ChatModal({ onClose }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Tanya sesuatu..."
+            placeholder="Ask something..."
             className="flex-1 rounded-xl px-4 py-2.5 text-[13.5px] outline-none transition-all duration-200"
             style={{
               background: '#F7F4F4',
