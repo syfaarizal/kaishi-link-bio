@@ -15,7 +15,7 @@ export default function DiscordCard() {
       </div>
 
       <a
-        href="https://discord.gg/pa9uyMTp7w"
+        href="https://discord.gg/84NbEnYNdN"
         target="_blank"
         rel="noreferrer"
         className="discord-card group w-full rounded-2xl flex flex-col overflow-hidden"
