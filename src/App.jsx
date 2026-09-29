@@ -9,11 +9,9 @@ import SocialIcons from './components/SocialIcons';
 import LinkButton from './components/LinkButton';
 import DiscordCard from './components/DiscordCard';
 import ChatModal from './components/ChatModal';
-import MaintenanceModal from './components/MaintenanceModal';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMaintenanceOpen, setIsMaintenanceOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-pattern text-white font-sans flex justify-center px-5 py-8 selection:bg-[#5A0F14]/50 selection:text-white">
@@ -27,10 +25,7 @@ export default function App() {
         <div className="w-full flex flex-col gap-3">
 
           {/* Featured links: Portfolio + Kichi */}
-          <LinkButton
-            {...LINK_BUTTONS[0]}
-            onClick={() => setIsMaintenanceOpen(true)}
-          />
+          <LinkButton {...LINK_BUTTONS[0]} />
           <LinkButton {...LINK_BUTTONS[1]} />
 
           {/* AI Chat — primary CTA, maroon filled */}
@@ -80,7 +75,6 @@ export default function App() {
       </div>
 
       {isModalOpen && <ChatModal onClose={() => setIsModalOpen(false)} />}
-      {isMaintenanceOpen && <MaintenanceModal onClose={() => setIsMaintenanceOpen(false)} />}
     </div>
   );
 }

@@ -21,10 +21,8 @@ export const LINK_BUTTONS = [
     icon: <FaBriefcaseIcon size={18} />,
     text: "My Portfolio",
     delay: "1.4s",
-    href: "https://kaishi.netlify.app/",
+    href: "https://kaishiscd.vercel.app/",
     variant: "featured",
-    badge: "Under Maintenance",
-    disabled: true,
   },
   {
     icon: <KichiIcon size={18} />,
