@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Bot } from 'lucide-react';
+import { Sparkles, Bot, ChevronRight } from 'lucide-react';
 
 import customStyles from './styles/customStyles';
 import { LINK_BUTTONS } from './constants/links';
@@ -9,9 +9,12 @@ import SocialIcons from './components/SocialIcons';
 import LinkButton from './components/LinkButton';
 import DiscordCard from './components/DiscordCard';
 import ChatModal from './components/ChatModal';
+import WorkWithModal from './components/WorkWithModal';
+import { FaBriefcaseIcon } from './components/icons';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWorkModalOpen, setIsWorkModalOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-pattern text-white font-sans flex justify-center px-5 py-8 selection:bg-[#5A0F14]/50 selection:text-white">
@@ -26,6 +29,32 @@ export default function App() {
 
           {/* Featured links: Portfolio + Kichi */}
           <LinkButton {...LINK_BUTTONS[0]} />
+
+          <button
+            type="button"
+            onClick={() => setIsWorkModalOpen(true)}
+            className="link-card link-card-featured group w-full rounded-2xl flex items-center justify-between p-4 animate-[slideIn_0.5s_ease-out_forwards] opacity-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A1520]"
+            style={{
+              animationDelay: '1.5s',
+              animationFillMode: 'forwards',
+              border: '1px solid rgba(160,28,40,0.30)',
+              cursor: 'pointer',
+            }}
+          >
+            <span className="card-content flex items-center gap-3.5 relative z-10">
+              <span
+                className="card-icon flex items-center justify-center w-9 h-9 rounded-xl"
+                style={{ background: 'rgba(90,15,20,0.08)', color: '#7A1520' }}
+              >
+                <FaBriefcaseIcon size={18} />
+              </span>
+              <span className="card-text font-semibold text-[14.5px] leading-tight" style={{ color: '#0F0809' }}>
+                Work With Kai Shi
+              </span>
+            </span>
+            <ChevronRight size={16} className="card-chevron relative z-10" style={{ color: 'rgba(0,0,0,0.2)' }} />
+          </button>
+
           <LinkButton {...LINK_BUTTONS[1]} />
 
           {/* AI Chat — primary CTA, maroon filled */}
@@ -75,6 +104,7 @@ export default function App() {
       </div>
 
       {isModalOpen && <ChatModal onClose={() => setIsModalOpen(false)} />}
+      {isWorkModalOpen && <WorkWithModal onClose={() => setIsWorkModalOpen(false)} />}
     </div>
   );
 }
